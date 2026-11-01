@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UniOpt-X | Timetable Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #111014;
+            --card: #1D1A20;
+            --ink: #FFFFFF;
+            --mute: #B9B2BA;
+            --line: #38323B;
+            --acc: #E7A1BB;
+            --err: #FF858F;
+            --ok: #91D8B5;
+            --pink-light: #F0B7CC;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 50% 0%, #38232F 0%, transparent 42%),
+                var(--bg);
+            color: var(--ink);
+            font: 15px/1.6 'Inter', sans-serif;
+        }
+
+        header {
+            text-align: center;
+            padding: 45px 20px 20px;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(36px, 6vw, 54px);
+            letter-spacing: -2px;
+            background: linear-gradient(90deg, #FFFFFF, #E7A1BB, #F7DCE6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        header p {
+            margin: 6px 0 0;
+            color: var(--mute);
+            font-size: 12px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 10px 20px 60px;
+            display: grid;
+            gap: 22px;
+        }
+
+        section {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            padding: 24px;
+            box-shadow: 0 12px 35px #00000035;
+        }
+
+        h2 {
+            margin: 0 0 6px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            color: var(--pink-light);
+        }
+
+        .desc {
+            color: var(--mute);
+            font-size: 13px;
+            margin: 0 0 18px;
+        }
+
+        .top {
+            display: flex;
+            gap: 11px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+
+        a.btn,
+        button {
+            font: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            border: 1px solid #49414B;
+            background: #29242D;
+            color: #FFFFFF;
+            border-radius: 9px;
+            padding: 9px 16px;
+            transition: .2s ease;
+        }
+
+        a.btn:hover,
+        button:hover {
+            border-color: var(--acc);
+            transform: translateY(-2px);
+        }
+
+        a.btn.primary {
+            background: var(--acc);
+            color: #171217;
+            border-color: var(--acc);
+            font-weight: 700;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+        }
+
+        .stat {
+            background: #252129;
+            border: 1px solid #403943;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .stat b {
+            display: block;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 30px;
+            color: var(--pink-light);
+            line-height: 1.1;
+        }
+
+        .stat span {
+            color: var(--mute);
+            font-size: 12px;
+        }
+
+        .stat.good b {
+            color: var(--ok);
+        }
+
+        .stat.bad b {
+            color: var(--err);
+        }
+
+        .bar-row {
+            display: grid;
+            grid-template-columns: minmax(120px, 220px) 1fr 90px;
+            gap: 12px;
+            align-items: center;
+            margin: 9px 0;
+            font-size: 13px;
+        }
+
+        .bar-row .name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .track {
+            background: #151319;
+            border: 1px solid #38323B;
+            border-radius: 99px;
+            height: 14px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E7A1BB, #F7DCE6);
+            border-radius: 99px;
+        }
+
+        .fill.over {
+            background: var(--err);
+        }
+
+        .val {
+            color: var(--mute);
+            text-align: right;
+            font-size: 12px;
+        }
+
+        .scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 560px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--line);
+            padding: 10px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        th {
+            background: #302630;
+            color: var(--pink-light);
+            font-weight: 600;
+        }
+
+        td.left,
+        th.left {
+            text-align: left;
+        }
+
+        td {
+            background: #211D24;
+        }
+
+        td small {
+            display: block;
+            color: var(--mute);
+        }
+
+        td.gap {
+            background: #4A2630;
+        }
+
+        td.none {
+            color: var(--mute);
+        }
+
+        .err {
+            color: var(--err);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: var(--mute);
+        }
+
+        @media (max-width: 600px) {
+            .bar-row {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+
+            .val {
+                text-align: left;
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff !important;
+                color: #000 !important;
+            }
+
+            .top {
+                display: none;
+            }
+
+            section,
+            .stat {
+                background: #fff !important;
+                color: #000 !important;
+                box-shadow: none;
+                border-color: #999;
+            }
+
+            h1,
+            h2,
+            .stat b {
+                color: #000 !important;
+                background: none;
+                -webkit-text-fill-color: #000;
+            }
+
+            th,
+            td {
+                background: #fff !important;
+                color: #000 !important;
+                border-color: #777 !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Timetable Dashboard</h1>
+        <p>UniOpt-X · Analytics &amp; Statistics</p>
+    </header>
+
+    <main>
+        <div class="top">
+            <a class="btn primary" href="/">← Back to Timetable</a>
+            <button onclick="window.print()">Print Dashboard</button>
+        </div>
+
+        <div id="root">
+            <section>
+                <div class="empty">Loading dashboard...</div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const $ = s => document.querySelector(s);
+
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+
+        const DAYS = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+        async function get(url) {
+            const r = await fetch(url);
+            const j = await r.json();
+            if (!r.ok) throw new Error(j.error || 'Something went wrong');
+            return j;
+        }
+
+        const span = set => {
+            const a = [...set];
+            return { min: Math.min(...a), max: Math.max(...a), n: a.length };
+        };
+        const gapOf = set => {
+            const s = span(set);
+            return s.max - s.min + 1 - s.n;
+        };
+
+        function bars(items, maxOf) {
+            return items.map(it => {
+                const cap = maxOf(it);
+                const pct = cap ? Math.min(100, Math.round(it.value / cap * 100)) : 0;
+                const over = it.limit && it.value > it.limit;
+                return `
+                <div class="bar-row">
+                    <div class="name" title="${esc(it.name)}">${esc(it.name)}</div>
+                    <div class="track"><div class="fill ${over ? 'over' : ''}" style="width:${pct}%"></div></div>
+                    <div class="val">${esc(it.label)}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function render(data, rows) {
+
+            if (!rows.length) {
+                $('#root').innerHTML = `
+                <section><div class="empty">
+                    No timetable generated yet.<br>
+                    Go back, click <b>Generate Timetable</b>, then open the dashboard again.
+                </div></section>`;
+                return;
+            }
+
+            const totalSlots = data.slots.total || 35;
+            const labSubjects = new Set(
+                data.subjects.filter(s => s.is_lab).map(s => s.name)
+            );
+
+            // ---- aggregates ----
+            const secDay = {};      // section -> day -> Set(periods)
+            const facDay = {};      // faculty -> day -> Set(periods)
+            const facCount = {};
+            const roomCount = {};
+
+            rows.forEach(r => {
+                ((secDay[r.class_name] ??= {})[r.day_no] ??= new Set()).add(r.period_no);
+                ((facDay[r.faculty_name] ??= {})[r.day_no] ??= new Set()).add(r.period_no);
+                facCount[r.faculty_name] = (facCount[r.faculty_name] || 0) + 1;
+                roomCount[r.room_name] = (roomCount[r.room_name] || 0) + 1;
+            });
+
+            let studentGaps = 0, facultyGaps = 0;
+            Object.values(secDay).forEach(d => Object.values(d).forEach(s => studentGaps += gapOf(s)));
+            Object.values(facDay).forEach(d => Object.values(d).forEach(s => facultyGaps += gapOf(s)));
+
+            const labPeriods = rows.filter(r => labSubjects.has(r.subject_name)).length;
+            const roomsUsed = Object.keys(roomCount).length;
+            const sections = Object.keys(secDay).sort();
+
+            // ---- summary cards ----
+            const cards = `
+            <section>
+                <h2>Overview</h2>
+                <p class="desc">Summary of the currently generated timetable.</p>
+                <div class="cards">
+                    <div class="stat"><b>${rows.length}</b><span>Periods scheduled</span></div>
+                    <div class="stat"><b>${sections.length}</b><span>Sections</span></div>
+                    <div class="stat"><b>${Object.keys(facCount).length}</b><span>Faculty teaching</span></div>
+                    <div class="stat"><b>${roomsUsed}/${data.rooms.length}</b><span>Rooms used</span></div>
+                    <div class="stat"><b>${labPeriods}</b><span>Lab periods</span></div>
+                    <div class="stat ${studentGaps ? 'bad' : 'good'}"><b>${studentGaps}</b><span>Student free-period gaps</span></div>
+                    <div class="stat ${facultyGaps ? 'bad' : 'good'}"><b>${facultyGaps}</b><span>Faculty free-period gaps</span></div>
+                </div>
+            </section>`;
+
+            // ---- faculty workload ----
+            const limits = Object.fromEntries(data.faculty.map(f => [f.name, f.max_periods]));
+            const facItems = Object.entries(facCount)
+                .sort((a, b) => b[1] - a[1])
+                .map(([name, value]) => ({
+                    name, value, limit: limits[name],
+                    label: limits[name] ? `${value} / ${limits[name]}` : `${value}`
+                }));
+
+            const facHtml = `
+            <section>
+                <h2>Faculty Workload</h2>
+                <p class="desc">Periods per week against each faculty's maximum. Red means over the limit.</p>
+                ${bars(facItems, it => it.limit || Math.max(...facItems.map(x => x.value)))}
+            </section>`;
+
+            // ---- room utilization ----
+            const roomItems = data.rooms.map(r => ({
+                name: r.name + (r.is_lab ? ' (Lab)' : ''),
+                value: roomCount[r.name] || 0,
+                label: `${roomCount[r.name] || 0} / ${totalSlots}`
+            })).sort((a, b) => b.value - a.value);
+
+            const roomHtml = `
+            <section>
+                <h2>Room Utilization</h2>
+                <p class="desc">Periods used out of all weekly slots.</p>
+                ${bars(roomItems, () => totalSlots)}
+            </section>`;
+
+            // ---- section day load ----
+            const secRows = sections.map(sec => {
+                let total = 0, gaps = 0;
+                const cells = [1, 2, 3, 4, 5].map(d => {
+                    const s = (secDay[sec] || {})[d];
+                    if (!s) return '<td class="none">–</td>';
+                    const sp = span(s), g = sp.max - sp.min + 1 - sp.n;
+                    total += sp.n; gaps += g;
+                    return `<td class="${g ? 'gap' : ''}">${sp.n} periods<small>P${sp.min}–P${sp.max}${g ? ` · ${g} gap` : ''}</small></td>`;
+                }).join('');
+                return `<tr><td class="left">${esc(sec)}</td>${cells}<td>${total}</td><td>${gaps}</td></tr>`;
+            }).join('');
+
+            const secHtml = `
+            <section>
+                <h2>Section Day Load</h2>
+                <p class="desc">Periods and time span per day. Red cells have a free period between classes.</p>
+                <div class="scroll"><table>
+                    <tr><th class="left">Section</th>${DAYS.slice(1).map(d => `<th>${d}</th>`).join('')}<th>Total</th><th>Gaps</th></tr>
+                    ${secRows}
+                </table></div>
+            </section>`;
+
+            // ---- faculty day load ----
+            const facNames = Object.keys(facDay).sort();
+            const facRows = facNames.map(f => {
+                let total = 0, gaps = 0;
+                const cells = [1, 2, 3, 4, 5].map(d => {
+                    const s = facDay[f][d];
+                    if (!s) return '<td class="none">–</td>';
+                    const sp = span(s), g = sp.max - sp.min + 1 - sp.n;
+                    total += sp.n; gaps += g;
+                    return `<td class="${g ? 'gap' : ''}">${sp.n} periods<small>P${sp.min}–P${sp.max}${g ? ` · ${g} gap` : ''}</small></td>`;
+                }).join('');
+                return `<tr><td class="left">${esc(f)}</td>${cells}<td>${total}</td><td>${gaps}</td></tr>`;
+            }).join('');
+
+            const facDayHtml = `
+            <section>
+                <h2>Faculty Day Load</h2>
+                <p class="desc">Teaching periods per day for each faculty member.</p>
+                <div class="scroll"><table>
+                    <tr><th class="left">Faculty</th>${DAYS.slice(1).map(d => `<th>${d}</th>`).join('')}<th>Total</th><th>Gaps</th></tr>
+                    ${facRows}
+                </table></div>
+            </section>`;
+
+            $('#root').innerHTML =
+                `<div style="display:grid;gap:22px">${cards}${secHtml}${facHtml}${facDayHtml}${roomHtml}</div>`;
+        }
+
+        (async () => {
+            try {
+                const [data, tt] = await Promise.all([get('/api/data'), get('/api/timetable')]);
+                render(data, tt.rows || []);
+            } catch (e) {
+                $('#root').innerHTML =
+                    `<section><p class="err">Could not load dashboard: ${esc(e.message)}</p></section>`;
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
