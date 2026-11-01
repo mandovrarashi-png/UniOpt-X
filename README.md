@@ -37,7 +37,7 @@ UniOpt-X/
 
 1. Clone the Repository
 
-git clone YOUR_REPOSITORY_URL
+git clone https://github.com/mandovrarashi-png/UniOpt-X
 cd UniOpt-X
 
 
