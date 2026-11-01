@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UniOpt-X | Smart University Timetable Generator</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #111014;
+            --card: #1D1A20;
+            --ink: #FFFFFF;
+            --mute: #B9B2BA;
+            --line: #38323B;
+            --acc: #E7A1BB;
+            --err: #FF858F;
+            --ok: #91D8B5;
+            --lab: #382833;
+            --pink-light: #F0B7CC;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 50% 0%, #38232F 0%, transparent 42%),
+                var(--bg);
+            color: var(--ink);
+            font: 15px/1.6 'Inter', sans-serif;
+        }
+
+        header {
+            text-align: center;
+            padding: 55px 20px 30px;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(48px, 7vw, 68px);
+            letter-spacing: -3px;
+            background: linear-gradient(90deg, #FFFFFF, #E7A1BB, #F7DCE6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            color: var(--mute);
+            font-size: 12px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+        }
+
+        .header-line {
+            width: 85px;
+            height: 3px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #E7A1BB, #FFFFFF);
+            margin: 20px auto 0;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px 20px 60px;
+            display: grid;
+            gap: 22px;
+        }
+
+        section {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            padding: 24px;
+            box-shadow: 0 12px 35px #00000035;
+        }
+
+        h2 {
+            margin: 0 0 16px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 21px;
+            color: var(--pink-light);
+            letter-spacing: -.3px;
+        }
+
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .section-desc {
+            color: var(--mute);
+            font-size: 13px;
+            margin: -9px 0 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        form {
+            background: #252129;
+            border: 1px solid #403943;
+            border-radius: 11px;
+            padding: 17px;
+            display: grid;
+            gap: 11px;
+            align-content: start;
+        }
+
+        form h3 {
+            margin: 0 0 5px;
+            font-size: 16px;
+            color: var(--pink-light);
+        }
+
+        label {
+            display: grid;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--mute);
+        }
+
+        label.check {
+            display: flex;
+            gap: 9px;
+            align-items: center;
+        }
+
+        input,
+        select {
+            font: inherit;
+            color: #FFFFFF;
+            background: #151319;
+            border: 1px solid #49414B;
+            border-radius: 8px;
+            padding: 10px 11px;
+            width: 100%;
+            transition: .2s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--acc);
+            outline: none;
+            box-shadow: 0 0 0 3px #E7A1BB20;
+        }
+
+        input[type=checkbox] {
+            width: auto;
+            accent-color: var(--acc);
+        }
+
+        button {
+            font: inherit;
+            cursor: pointer;
+            border: 1px solid #49414B;
+            background: #29242D;
+            color: #FFFFFF;
+            border-radius: 9px;
+            padding: 10px 16px;
+            transition: .2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            border-color: var(--acc);
+            box-shadow: 0 4px 15px #E7A1BB18;
+        }
+
+        button.primary,
+        .dashboard-btn {
+            background: var(--acc);
+            color: #171217;
+            border: 1px solid var(--acc);
+            font-weight: 700;
+        }
+
+        button.primary:hover,
+        .dashboard-btn:hover {
+            background: #F2B9CE;
+            border-color: #F2B9CE;
+        }
+
+        button.danger {
+            color: var(--err);
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--acc);
+            outline-offset: 2px;
+        }
+
+        .row {
+            display: flex;
+            gap: 11px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .stats {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .stats span {
+            background: #302630;
+            border: 1px solid #59404F;
+            border-radius: 99px;
+            padding: 6px 13px;
+            font-size: 12px;
+            color: var(--pink-light);
+        }
+
+        .msg {
+            margin-top: 9px;
+            font-size: 13px;
+            min-height: 1em;
+        }
+
+        .msg.err {
+            color: var(--err);
+        }
+
+        .msg.ok {
+            color: var(--ok);
+        }
+
+        .scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 650px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--line);
+            padding: 11px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 13px;
+        }
+
+        th {
+            background: #302630;
+            color: var(--pink-light);
+            font-weight: 600;
+        }
+
+        td {
+            background: #211D24;
+            color: #FFFFFF;
+        }
+
+        td small {
+            display: block;
+            color: var(--mute);
+            margin-top: 4px;
+        }
+
+        th small {
+            display: block;
+            color: var(--mute);
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        td.empty {
+            color: var(--mute);
+        }
+
+        td.lab {
+            background: var(--lab);
+        }
+
+        th.lunch,
+        td.lunch {
+            background: #382833;
+            color: var(--pink-light);
+            text-align: center;
+            vertical-align: middle;
+            font-weight: 600;
+        }
+
+        .warn {
+            background: #302630;
+            border: 1px solid #795166;
+            color: #F7E8EE;
+            border-radius: 9px;
+            padding: 12px 15px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        /* EDIT / DELETE */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: #000000AA;
+            display: grid;
+            place-items: center;
+            z-index: 50;
+        }
+
+        .modal[hidden] {
+            display: none;
+        }
+
+        .modal form {
+            width: min(420px, 92vw);
+        }
+
+        td button {
+            padding: 5px 11px;
+            font-size: 12px;
+        }
+
+        /* GENERATED TIMETABLE ACTIONS */
+
+        #generatedActions {
+            display: block;
+            margin-top: 22px;
+            padding: 22px;
+            background: #252129;
+            border: 1px solid #59404F;
+            border-radius: 12px;
+        }
+
+        #generatedActions h3 {
+            margin-top: 0;
+            color: var(--pink-light);
+            font-size: 19px;
+        }
+
+        .action-desc {
+            color: var(--mute);
+            font-size: 13px;
+            margin-bottom: 17px;
+        }
+
+        #classPick {
+            max-width: 220px;
+        }
+
+        #roomMap {
+            margin-top: 12px;
+        }
+
+        #roomMap[hidden] {
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            color: #918995;
+            padding: 0 20px 25px;
+            font-size: 12px;
+        }
+
+        @media(max-width: 600px) {
+            header {
+                padding-top: 35px;
+            }
+
+            section {
+                padding: 17px;
+            }
+
+            .row>* {
+                max-width: 100%;
+            }
+
+            #classPick {
+                max-width: 100%;
+            }
+        }
+
+        /* PRINT STYLING */
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+
+            header,
+            footer,
+            main>section:not(#generationSection),
+            #generatedActions,
+            #genMsg,
+            .modal,
+            .no-print {
+                display: none !important;
+            }
+
+            main {
+                display: block;
+                max-width: 100%;
+                padding: 0;
+            }
+
+            #generationSection {
+                display: block;
+                background: white !important;
+                color: black !important;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+
+            #generationSection h2 {
+                color: black !important;
+            }
+
+            #grid {
+                min-width: 100%;
+            }
+
+            #grid th,
+            #grid td {
+                background: white !important;
+                color: black !important;
+                border: 1px solid #555 !important;
+            }
+
+            #grid td small {
+                color: #333 !important;
+            }
+
+            #grid th.lunch,
+            #grid td.lunch {
+                color: black !important;
+                background: #eee !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>UniOpt-X</h1>
+        <p>Smart University Timetable Generator</p>
+        <div class="header-line"></div>
+    </header>
+
+    <main>
+
+        <!-- 01. ACADEMIC SETUP -->
+
+        <section>
+            <h2>01. Academic Setup</h2>
+            <p class="section-desc">
+                Enter your university's departments, faculty, subjects, sections and rooms.
+            </p>
+
+            <div class="stats" id="stats"></div>
+
+            <div class="grid">
+
+                <form data-kind="department">
+                    <h3>Department</h3>
+                    <label>Department Name
+                        <input name="name" required placeholder="Computer Science">
+                    </label>
+                    <button class="primary">Add Department</button>
+                </form>
+
+                <form data-kind="faculty">
+                    <h3>Faculty</h3>
+                    <label>Faculty Name
+                        <input name="name" required placeholder="Prof. Sharma">
+                    </label>
+                    <label>Department
+                        <select name="dept" data-src="departments" required></select>
+                    </label>
+                    <label>Maximum Periods per Week
+                        <input type="number" name="max_periods" min="1" max="35" value="20" required>
+                    </label>
+                    <button class="primary">Add Faculty</button>
+                </form>
+
+                <form data-kind="subject">
+                    <h3>Subject</h3>
+                    <label>Subject Name
+                        <input name="name" required placeholder="DBMS">
+                    </label>
+                    <label>Department
+                        <select name="dept" data-src="departments" required></select>
+                    </label>
+                    <label class="check">
+                        <input type="checkbox" name="is_lab">
+                        Lab (2 consecutive periods)
+                    </label>
+                    <button class="primary">Add Subject</button>
+                </form>
+
+                <form data-kind="class">
+                    <h3>Section</h3>
+                    <label>Section Name
+                        <input name="name" required placeholder="CSE-A">
+                    </label>
+                    <label>Department
+                        <select name="dept" data-src="departments" required></select>
+                    </label>
+                    <label>Student Strength
+                        <input type="number" name="strength" min="1" value="60" required>
+                    </label>
+                    <button class="primary">Add Section</button>
+                </form>
+
+                <form data-kind="room">
+                    <h3>Room</h3>
+                    <label>Room Name
+                        <input name="name" required placeholder="R101">
+                    </label>
+                    <label>Room Capacity
+                        <input type="number" name="capacity" min="1" value="60" required>
+                    </label>
+                    <label class="check">
+                        <input type="checkbox" name="is_lab">
+                        Lab Room
+                    </label>
+                    <button class="primary">Add Room</button>
+                </form>
+
+                <form data-kind="slots">
+                    <h3>Weekly Schedule</h3>
+                    <label>Working Days
+                        <input type="text" value="Monday - Friday" readonly>
+                    </label>
+                    <label>Days per Week
+                        <input type="number" name="days" value="5" readonly required>
+                    </label>
+                    <label>Teaching Periods per Day
+                        <input type="number" name="periods" value="7" readonly required>
+                    </label>
+                    <p class="section-desc">10 AM - 6 PM | Lunch: 1 PM - 2 PM</p>
+                    <button class="primary">Create Time Slots</button>
+                </form>
+
+                <form data-kind="assign">
+                    <h3>Assign Subject to Section</h3>
+                    <label>Section
+                        <select name="class" data-src="classes" required></select>
+                    </label>
+                    <label>Subject
+                        <select name="subject" data-src="subjects" required></select>
+                    </label>
+                    <label>Faculty
+                        <select name="faculty" data-src="faculty" required></select>
+                    </label>
+                    <label>Periods per Week
+                        <input type="number" name="periods" min="1" max="35" value="3" required>
+                    </label>
+                    <button class="primary">Assign Subject</button>
+                </form>
+
+            </div>
+
+            <div class="msg" id="formMsg"></div>
+        </section>
+
+        <!-- 02. FACULTY AVAILABILITY -->
+
+        <section>
+            <h2>02. Faculty Availability</h2>
+            <p class="section-desc">
+                Mark the time slots when each faculty member is unavailable.
+                Unmarked slots are treated as available.
+            </p>
+
+            <div class="grid">
+                <form id="availabilityForm">
+                    <h3>Set Faculty Availability</h3>
+
+                    <label>Faculty
+                        <select name="faculty" id="availabilityFaculty" required></select>
+                    </label>
+
+                    <label>Day
+                        <select name="day" id="availabilityDay" required>
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                        </select>
+                    </label>
+
+                    <label>Period
+                        <select name="period" id="availabilityPeriod" required></select>
+                    </label>
+
+                    <label>Availability
+                        <select name="is_available" required>
+                            <option value="0">Unavailable</option>
+                            <option value="1">Available</option>
+                        </select>
+                    </label>
+
+                    <button class="primary">Save Availability</button>
+                </form>
+            </div>
+
+            <div class="msg" id="availabilityMsg"></div>
+
+            <h3 style="color:var(--pink-light);margin-top:22px;">Saved Availability</h3>
+            <div class="scroll">
+                <table id="availabilityTable"></table>
+            </div>
+        </section>
+
+        <!-- 03. ASSIGNED SUBJECTS -->
+
+        <section>
+            <h2>03. Assigned Subjects</h2>
+            <p class="section-desc">
+                Review the subjects assigned to each section and their weekly teaching hours.
+            </p>
+            <div class="scroll">
+                <table id="assignTable"></table>
+            </div>
+        </section>
+
+        <!-- MANAGE ENTRIES -->
+
+        <section>
+            <h2>Manage Entries</h2>
+            <p class="section-desc">Edit or delete departments, faculty, subjects, sections and rooms.</p>
+            <div class="msg" id="manageMsg"></div>
+            <div id="manage"></div>
+        </section>
+
+        <!-- 04. CONSTRAINT VALIDATION -->
+
+        <section>
+            <h2>04. Constraint Validation</h2>
+            <p class="section-desc">
+                Check whether your academic inputs satisfy the current validation rules.
+            </p>
+
+            <button class="primary" id="validateBtn">Validate Constraints</button>
+
+            <div class="msg" id="validationMsg"></div>
+            <div id="validationReport"></div>
+        </section>
+
+        <!-- 05. GENERATE TIMETABLE -->
+
+        <section id="generationSection">
+
+            <h2>05. Generate Timetable</h2>
+
+            <p class="section-desc no-print">
+                Generate an optimized timetable based on your academic requirements and scheduling constraints.
+            </p>
+
+            <div class="row no-print">
+                <button class="primary" id="genBtn">Generate Timetable</button>
+                <label class="check">
+                    <input type="checkbox" id="fixedRoom">
+                    Fixed room for each section (labs use lab rooms)
+                </label>
+                <select id="classPick" aria-label="Select Section"></select>
+                <button class="danger" id="resetBtn">Clear All Data</button>
+            </div>
+
+            <div class="row no-print" id="roomMap" hidden></div>
+
+            <div class="msg" id="genMsg"></div>
+
+            <div class="scroll" style="margin-top:15px">
+                <table id="grid"></table>
+            </div>
+
+            <!-- OPTIONS ALWAYS VISIBLE -->
+
+            <div id="generatedActions">
+                <h3>Your Timetable Options</h3>
+
+                <p class="action-desc">
+                    Generate your timetable to activate printing.
+                    You can also open the dashboard to view timetable analytics and statistics.
+                </p>
+
+                <div class="row no-print">
+                    <button class="primary" id="printBtn">
+                        Print / Save as PDF
+                    </button>
+
+                    <button class="dashboard-btn" id="dashboardBtn">
+                        Open Timetable Dashboard →
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- EDIT MODAL -->
+
+    <div class="modal" id="modal" hidden>
+        <form id="modalForm">
+            <h3 id="modalTitle"></h3>
+            <div id="modalFields" style="display:grid;gap:11px"></div>
+            <div class="row">
+                <button class="primary">Save</button>
+                <button type="button" id="modalCancel">Cancel</button>
+            </div>
+            <div class="msg" id="modalMsg"></div>
+        </form>
+    </div>
+
+    <footer>
+        UniOpt-X · Smart University Timetable Generator
+    </footer>
+
+    <script>
+
+        const $ = s => document.querySelector(s);
+
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[c]));
+
+        const DAYS = [
+            '',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday'
+        ];
+
+        const PERIOD_TIMES = [
+            '10–11 AM',
+            '11 AM–12 PM',
+            '12–1 PM',
+            '2–3 PM',
+            '3–4 PM',
+            '4–5 PM',
+            '5–6 PM'
+        ];
+
+        let state = null;
+        let ttRows = [];
+
+        // API HELPER
+
+        async function api(url, method = 'GET', body) {
+
+            const r = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: body ? JSON.stringify(body) : undefined
+            });
+
+            const j = await r.json();
+
+            if (!r.ok) {
+                throw new Error(j.error || j.message || 'Something went wrong');
+            }
+
+            return j;
+        }
+
+        // MESSAGE HELPER
+
+        function say(el, text, kind) {
+            el.textContent = text;
+            el.className = 'msg ' + (kind || '');
+        }
+
+        // SELECT HELPER
+
+        function fillSelect(sel, items, getValue, getLabel) {
+
+            const old = sel.value;
+
+            sel.innerHTML = items.map(item =>
+                `<option value="${esc(getValue(item))}">${esc(getLabel(item))}</option>`
+            ).join('');
+
+            if (old) sel.value = old;
+        }
+
+        // LOAD ACADEMIC DATA
+
+        async function loadData() {
+
+            state = await api('/api/data');
+
+            document.querySelectorAll('select[data-src]').forEach(sel => {
+
+                const source = state[sel.dataset.src] || [];
+
+                if (source.length && typeof source[0] === 'object') {
+                    fillSelect(sel, source, x => x.name, x => x.name);
+                } else {
+                    fillSelect(sel, source, x => x, x => x);
+                }
+            });
+
+            const s = state.slots;
+
+            $('#stats').innerHTML = [
+                `${state.departments.length} departments`,
+                `${state.faculty.length} faculty`,
+                `${state.subjects.length} subjects`,
+                `${state.classes.length} sections`,
+                `${state.rooms.length} rooms`,
+                `${s.days} days × ${s.periods} periods`
+            ].map(t => `<span>${esc(t)}</span>`).join('');
+
+            $('#assignTable').innerHTML = state.assignments.length
+                ? '<tr><th>Section</th><th>Subject</th><th>Faculty</th><th>Periods/Week</th><th>Actions</th></tr>' +
+                state.assignments.map(a => `
+            <tr>
+                <td>${esc(a.class_name)}</td>
+                <td>${esc(a.subject_name)}</td>
+                <td>${esc(a.faculty_name)}</td>
+                <td>${a.periods_per_week}</td>
+                <td>
+                    <button data-act="edit-assign" data-class="${esc(a.class_name)}" data-subject="${esc(a.subject_name)}">Edit</button>
+                    <button class="danger" data-act="del-assign" data-class="${esc(a.class_name)}" data-subject="${esc(a.subject_name)}">Delete</button>
+                </td>
+            </tr>
+        `).join('')
+                : '<tr><td class="empty">No subjects assigned yet.</td></tr>';
+
+            fillSelect($('#classPick'), state.classes, x => x.name, x => x.name);
+
+            fillSelect(
+                $('#availabilityFaculty'),
+                state.faculty,
+                x => x.name,
+                x => x.name
+            );
+
+            const periodCount = Math.min(Number(s.periods || 0), 7);
+
+            $('#availabilityPeriod').innerHTML = Array.from(
+                { length: periodCount },
+                (_, i) => `
+            <option value="${i + 1}">
+                Period ${i + 1} - ${PERIOD_TIMES[i] || ''}
+            </option>
+        `
+            ).join('');
+
+            renderManage();
+            renderRoomMap();
+            renderGrid();
+        }
+
+        // LOAD TIMETABLE
+
+        async function loadTimetable() {
+
+            const result = await api('/api/timetable');
+
+            ttRows = result.rows || [];
+
+            renderGrid();
+        }
+
+        // LOAD AVAILABILITY
+
+        async function loadAvailability() {
+
+            const records = await api('/api/availability');
+
+            $('#availabilityTable').innerHTML = records.length
+                ? '<tr><th>Faculty</th><th>Day</th><th>Period</th><th>Status</th></tr>' +
+                records.map(a => `
+            <tr>
+                <td>${esc(a.faculty_name)}</td>
+                <td>${esc(DAYS[a.day_no] || a.day_no)}</td>
+                <td>${a.period_no}</td>
+                <td>${a.is_available === 1 ? 'Available' : 'Unavailable'}</td>
+            </tr>
+        `).join('')
+                : '<tr><td class="empty">No availability restrictions saved. All slots are treated as available.</td></tr>';
+        }
+
+        // RENDER TIMETABLE
+
+        function renderGrid() {
+
+            const cls = $('#classPick').value;
+            const g = $('#grid');
+
+            if (!state || !cls || !state.slots.total) {
+                g.innerHTML = '<tr><td class="empty">Enter data first, then generate the timetable.</td></tr>';
+                return;
+            }
+
+            const mine = ttRows.filter(r => r.class_name === cls);
+
+            if (!mine.length) {
+                g.innerHTML = '<tr><td class="empty">No timetable generated for this section yet.</td></tr>';
+                return;
+            }
+
+            const days = Math.min(state.slots.days, 5);
+            const periods = Math.min(state.slots.periods, 7);
+
+            let h = '<tr><th>Day</th>';
+
+            for (let p = 1; p <= periods; p++) {
+
+                h += `<th>Period ${p}<small>${PERIOD_TIMES[p - 1]}</small></th>`;
+
+                if (p === 3) {
+                    h += '<th class="lunch">Lunch<br>1–2 PM</th>';
+                }
+            }
+
+            h += '</tr>';
+
+            for (let d = 1; d <= days; d++) {
+
+                h += `<tr><th>${DAYS[d]}</th>`;
+
+                for (let p = 1; p <= periods; p++) {
+
+                    const c = mine.find(r => r.day_no === d && r.period_no === p);
+
+                    h += c
+                        ? `<td>${esc(c.subject_name)}<small>${esc(c.faculty_name)} · ${esc(c.room_name)}</small></td>`
+                        : '<td class="empty">–</td>';
+
+                    if (p === 3) {
+                        h += '<td class="lunch">Lunch Break</td>';
+                    }
+                }
+
+                h += '</tr>';
+            }
+
+            g.innerHTML = h;
+        }
+
+        // ACADEMIC SETUP FORMS
+
+        document.querySelectorAll('form[data-kind]').forEach(f => {
+
+            f.addEventListener('submit', async e => {
+
+                e.preventDefault();
+
+                const body = {};
+
+                f.querySelectorAll('input[name],select[name]').forEach(i => {
+
+                    body[i.name] = i.type === 'checkbox'
+                        ? (i.checked ? 1 : 0)
+                        : i.type === 'number'
+                            ? Number(i.value)
+                            : i.value.trim();
+                });
+
+                try {
+
+                    await api('/api/add/' + f.dataset.kind, 'POST', body);
+
+                    say($('#formMsg'), 'Successfully added!', 'ok');
+
+                    f.querySelectorAll('input[type=text],input:not([type])')
+                        .forEach(i => i.value = '');
+
+                    await loadData();
+
+                } catch (err) {
+
+                    say($('#formMsg'), err.message, 'err');
+                }
+            });
+        });
+
+        // FACULTY AVAILABILITY
+
+        $('#availabilityForm').addEventListener('submit', async e => {
+
+            e.preventDefault();
+
+            const f = e.currentTarget;
+
+            const body = {
+                faculty: f.elements.faculty.value,
+                day: Number(f.elements.day.value),
+                period: Number(f.elements.period.value),
+                is_available: Number(f.elements.is_available.value)
+            };
+
+            try {
+
+                await api('/api/availability', 'POST', body);
+
+                say($('#availabilityMsg'), 'Faculty availability saved successfully!', 'ok');
+
+                await loadAvailability();
+
+            } catch (err) {
+
+                say($('#availabilityMsg'), err.message, 'err');
+            }
+        });
+
+        // VALIDATE CONSTRAINTS
+
+        $('#validateBtn').addEventListener('click', async () => {
+
+            say($('#validationMsg'), 'Checking constraints...');
+
+            $('#validationReport').innerHTML = '';
+
+            try {
+
+                const result = await api('/api/validate');
+
+                say(
+                    $('#validationMsg'),
+                    result.valid ? 'Current validation checks passed.' : 'Constraint validation failed.',
+                    result.valid ? 'ok' : 'err'
+                );
+
+                let html = '';
+
+                if (result.errors.length) {
+                    html += `
+                <div class="warn">
+                    <strong>Errors</strong>
+                    <ul>${result.errors.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+                </div>
+            `;
+                }
+
+                if (result.warnings.length) {
+                    html += `
+                <div class="warn">
+                    <strong>Warnings</strong>
+                    <ul>${result.warnings.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+                </div>
+            `;
+                }
+
+                if (!html) {
+                    html = '<p class="msg ok">No validation errors or warnings.</p>';
+                }
+
+                $('#validationReport').innerHTML = html;
+
+            } catch (err) {
+
+                say($('#validationMsg'), err.message, 'err');
+            }
+        });
+
+        // GENERATE TIMETABLE
+
+        $('#genBtn').addEventListener('click', async () => {
+
+            const btn = $('#genBtn');
+
+            btn.disabled = true;
+
+            say($('#genMsg'), 'Generating optimized timetable...');
+
+            try {
+
+                const result = await api('/api/generate', 'POST', {
+                    fixed_room: $('#fixedRoom').checked,
+                    room_map: collectRoomMap()
+                });
+
+                await loadTimetable();
+
+                say(
+                    $('#genMsg'),
+                    result.message || 'Timetable generated successfully!',
+                    'ok'
+                );
+
+                $('#generationSection').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+
+            } catch (err) {
+
+                say($('#genMsg'), err.message, 'err');
+
+            } finally {
+
+                btn.disabled = false;
+            }
+        });
+
+        // PRINT / SAVE AS PDF
+
+        $('#printBtn').addEventListener('click', () => {
+
+            if (!ttRows.length) {
+
+                alert('Please generate a timetable first!');
+
+                return;
+            }
+
+            window.print();
+        });
+
+        // OPEN DASHBOARD
+
+        $('#dashboardBtn').addEventListener('click', () => {
+
+            window.location.href = '/dashboard';
+        });
+
+        // ---------- MANAGE ENTRIES (EDIT / DELETE) ----------
+
+        const MANAGE = {
+            department: {
+                title: 'Departments',
+                items: () => state.departments.map(n => ({ name: n })),
+                cols: [['name', 'Name']],
+                fields: [{ key: 'name', label: 'Department Name', type: 'text' }]
+            },
+            faculty: {
+                title: 'Faculty',
+                items: () => state.faculty,
+                cols: [['name', 'Name'], ['max_periods', 'Max Periods/Week']],
+                fields: [
+                    { key: 'name', label: 'Faculty Name', type: 'text' },
+                    { key: 'max_periods', label: 'Maximum Periods per Week', type: 'number' }
+                ]
+            },
+            subject: {
+                title: 'Subjects',
+                items: () => state.subjects,
+                cols: [['name', 'Name'], ['is_lab', 'Lab?']],
+                fields: [
+                    { key: 'name', label: 'Subject Name', type: 'text' },
+                    { key: 'is_lab', label: 'Lab (2 consecutive periods)', type: 'checkbox' }
+                ]
+            },
+            class: {
+                title: 'Sections',
+                items: () => state.classes,
+                cols: [['name', 'Name'], ['student_strength', 'Strength']],
+                fields: [
+                    { key: 'name', label: 'Section Name', type: 'text' },
+                    { key: 'student_strength', label: 'Student Strength', type: 'number' }
+                ]
+            },
+            room: {
+                title: 'Rooms',
+                items: () => state.rooms,
+                cols: [['name', 'Name'], ['capacity', 'Capacity'], ['is_lab', 'Lab?']],
+                fields: [
+                    { key: 'name', label: 'Room Name', type: 'text' },
+                    { key: 'capacity', label: 'Room Capacity', type: 'number' },
+                    { key: 'is_lab', label: 'Lab Room', type: 'checkbox' }
+                ]
+            }
+        };
+
+        const fmt = (key, v) => key === 'is_lab' ? (v ? 'Yes' : 'No') : v;
+
+        function renderManage() {
+            $('#manage').innerHTML = Object.entries(MANAGE).map(([kind, m]) => {
+                const items = m.items();
+                const head = m.cols.map(c => `<th>${c[1]}</th>`).join('') + '<th>Actions</th>';
+                const body = items.length
+                    ? items.map(it => `<tr>
+                ${m.cols.map(c => `<td>${esc(fmt(c[0], it[c[0]]))}</td>`).join('')}
+                <td>
+                    <button data-act="edit" data-kind="${kind}" data-name="${esc(it.name)}">Edit</button>
+                    <button class="danger" data-act="delete" data-kind="${kind}" data-name="${esc(it.name)}">Delete</button>
+                </td></tr>`).join('')
+                    : `<tr><td class="empty" colspan="${m.cols.length + 1}">Nothing added yet.</td></tr>`;
+                return `<h3 style="color:var(--pink-light)">${m.title}</h3>
+                <div class="scroll"><table><tr>${head}</tr>${body}</table></div>`;
+            }).join('');
+        }
+
+        // ---------- MODAL ----------
+
+        let modalSave = null;
+
+        function openModal(title, fields, values, onSave) {
+            $('#modalTitle').textContent = title;
+            $('#modalMsg').textContent = '';
+            $('#modalFields').innerHTML = fields.map(f => {
+                const v = values[f.key];
+                if (f.type === 'checkbox')
+                    return `<label class="check"><input type="checkbox" name="${f.key}" ${v ? 'checked' : ''}> ${esc(f.label)}</label>`;
+                if (f.type === 'select')
+                    return `<label>${esc(f.label)}<select name="${f.key}">${f.options.map(o =>
+                        `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`;
+                return `<label>${esc(f.label)}<input name="${f.key}" type="${f.type}" value="${esc(v)}" required ${f.type === 'number' ? 'min="1"' : ''}></label>`;
+            }).join('');
+            modalSave = onSave;
+            $('#modal').hidden = false;
+        }
+
+        const closeModal = () => { $('#modal').hidden = true; };
+
+        $('#modalCancel').addEventListener('click', closeModal);
+
+        $('#modalForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const body = {};
+            e.currentTarget.querySelectorAll('input[name],select[name]').forEach(i => {
+                body[i.name] = i.type === 'checkbox' ? (i.checked ? 1 : 0)
+                    : i.type === 'number' ? Number(i.value) : i.value.trim();
+            });
+            try {
+                await modalSave(body);
+                closeModal();
+            } catch (err) {
+                say($('#modalMsg'), err.message, 'err');
+            }
+        });
+
+        async function refreshAll() {
+            await loadData();
+            await loadTimetable();
+            await loadAvailability();
+        }
+
+        // ---------- BUTTON CLICKS (edit / delete) ----------
+
+        document.addEventListener('click', async e => {
+            const b = e.target.closest('button[data-act]');
+            if (!b) return;
+
+            const { act, kind, name } = b.dataset;
+            const msg = $('#manageMsg');
+
+            try {
+                if (act === 'edit') {
+                    const m = MANAGE[kind];
+                    const item = m.items().find(x => x.name === name);
+                    openModal('Edit ' + name, m.fields, item, async body => {
+                        await api('/api/edit/' + kind, 'PUT', { ...body, old_name: name });
+                        await refreshAll();
+                        say(msg, 'Updated successfully!', 'ok');
+                    });
+                }
+
+                else if (act === 'delete') {
+                    if (!confirm(`Delete "${name}"? Its assignments and generated timetable entries will also be removed.`)) return;
+                    await api('/api/delete/' + kind, 'DELETE', { name });
+                    await refreshAll();
+                    say(msg, 'Deleted successfully!', 'ok');
+                }
+
+                else if (act === 'edit-assign') {
+                    const a = state.assignments.find(x =>
+                        x.class_name === b.dataset.class && x.subject_name === b.dataset.subject);
+                    openModal(`Edit ${a.subject_name} (${a.class_name})`, [
+                        { key: 'faculty', label: 'Faculty', type: 'select', options: state.faculty.map(f => f.name) },
+                        { key: 'periods', label: 'Periods per Week', type: 'number' }
+                    ], { faculty: a.faculty_name, periods: a.periods_per_week }, async body => {
+                        await api('/api/assignment', 'PUT', {
+                            class: a.class_name, subject: a.subject_name, ...body
+                        });
+                        await refreshAll();
+                        say(msg, 'Assignment updated!', 'ok');
+                    });
+                }
+
+                else if (act === 'del-assign') {
+                    if (!confirm('Remove this subject from the section?')) return;
+                    await api('/api/assignment', 'DELETE', {
+                        class: b.dataset.class, subject: b.dataset.subject
+                    });
+                    await refreshAll();
+                    say(msg, 'Assignment removed!', 'ok');
+                }
+            } catch (err) {
+                say(msg, err.message, 'err');
+            }
+        });
+
+        // ---------- FIXED ROOM PER SECTION ----------
+
+        const RM_KEY = 'uniopt_room_map';
+
+        function getRoomMap() {
+            try { return JSON.parse(localStorage.getItem(RM_KEY) || '{}'); }
+            catch { return {}; }
+        }
+
+        function renderRoomMap() {
+            const box = $('#roomMap');
+            if (!state) return;
+
+            const saved = getRoomMap();
+            const rooms = state.rooms.filter(r => !r.is_lab);
+
+            box.innerHTML = state.classes.map(c => `
+                <label style="min-width:180px">${esc(c.name)} room
+                    <select data-sec="${esc(c.name)}">
+                        <option value="">Auto</option>
+                        ${rooms.map(r => `<option value="${esc(r.name)}" ${saved[c.name] === r.name ? 'selected' : ''}>${esc(r.name)} (${r.capacity})</option>`).join('')}
+                    </select>
+                </label>`).join('');
+
+            box.hidden = !$('#fixedRoom').checked || !state.classes.length;
+        }
+
+        function collectRoomMap() {
+            const m = {};
+            document.querySelectorAll('#roomMap select').forEach(s => {
+                if (s.value) m[s.dataset.sec] = s.value;
+            });
+            return m;
+        }
+
+        document.addEventListener('change', e => {
+            if (e.target.id === 'fixedRoom') {
+                renderRoomMap();
+            } else if (e.target.matches('#roomMap select')) {
+                const m = getRoomMap();
+                m[e.target.dataset.sec] = e.target.value;
+                try { localStorage.setItem(RM_KEY, JSON.stringify(m)); } catch { }
+            }
+        });
+
+        // SECTION FILTER
+
+        $('#classPick').addEventListener('change', renderGrid);
+
+        // RESET BUTTON - DISABLED
+
+        $('#resetBtn').addEventListener('click', () => {
+
+            say(
+                $('#genMsg'),
+                'Clear All Data is temporarily disabled to protect your project data.',
+                'err'
+            );
+        });
+
+        // INITIALIZE WEBSITE
+
+        async function start() {
+
+            try {
+
+                await loadData();
+
+                await loadTimetable();
+
+                await loadAvailability();
+
+                if (ttRows.length > 0) {
+
+                    say(
+                        $('#genMsg'),
+                        'Previously generated timetable loaded.',
+                        'ok'
+                    );
+                }
+
+            } catch (err) {
+
+                say(
+                    $('#formMsg'),
+                    'Could not load database data: ' + err.message,
+                    'err'
+                );
+            }
+        }
+
+        start();
+
+    </script>
+
+</body>
+
+</html>
