@@ -36,14 +36,12 @@ UniOpt-X/
  Setup and Installation
 
 1. Clone the Repository
-
-git clone https://github.com/mandovrarashi-png/UniOpt-X
+git clone https://github.com/mandovrarashi-png/UniOpt-X.git
 cd UniOpt-X
 
 
  2. Install Dependencies
 pip install -r requirements.txt
-
 
  3. Configure Environment Variables
 Create a .env file in the project root directory and add your local Oracle database configuration:
